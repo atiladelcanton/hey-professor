@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 # Cores
 NC='\033[0m'
@@ -22,3 +21,4 @@ if [[ $COMMIT_MESSAGE == $ISSUE_ID* ]]; then
 fi
 
 echo "$ISSUE_ID: $COMMIT_MESSAGE" >$1
+
