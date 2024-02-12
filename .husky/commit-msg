@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 
-exit 0
 REGEX_ISSUE_ID="[a-zA-Z0-9,\.\_\-]+-[0-9]+"
 
 NC='\033[0m'
