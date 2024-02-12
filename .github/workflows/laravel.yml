@@ -12,8 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Docker
-        uses: actions/setup-docker@v2
+      - name: Set up Docker Sail
+        uses: docker/setup-buildx-action@v1
         with:
           dockerfile: ./vendor/laravel/sail/Dockerfile
           context: .
