@@ -10,38 +10,70 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
-      with:
-        php-version: '8.2'
-    - uses: actions/checkout@v3
-    - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-    - name: Clear Composer cache
-      run: composer clear-cache
-    - name: Install Dependencies
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-    - name: Generate key
-      run: php artisan key:generate
-    - name: Directory Permissions
-      run: chmod -R 777 storage bootstrap/cache
-    - name: Create Database
-      run: |
-        mkdir -p database
-        touch database/database.sqlite
-        
-    - name: Installing Package.json
-      run: npm install
-      
-    - name: Build Assets
-      run: npm run build    
-    - name: Execute tests (Unit and Feature tests) via PEST
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: php artisan test --parallel
-      
-    - name: Execute Larastan
-      run: vendor/bin/phpstan analyze
-      
-    - name: Execute Pint
-      run: vendor/bin/pint --test
+      - uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: actions/setup-docker@v2
+        with:
+          dockerfile: ./vendor/laravel/sail/Dockerfile
+          context: .
+
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+      - name: Clear Composer cache
+        run: docker run --rm -v $(pwd):/var/www/html composer clear-cache
+
+      - name: Install Dependencies
+        run: docker run --rm \
+          -v $(pwd):/var/www/html \
+          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Generate key
+        run: docker run --rm \
+          -v $(pwd):/var/www/html \
+          -w /var/www/html \
+          your_project_name_php_1 php artisan key:generate
+
+      - name: Directory Permissions
+        run: docker run --rm \
+          -v $(pwd):/var/www/html \
+          -w /var/www/html \
+          your_project_name_php_1 chmod -R 777 storage bootstrap/cache
+
+      - name: Create Database
+        run: docker run --rm \
+          -v $(pwd):/var/www/html \
+          -w /var/www/html \
+          your_project_name_php_1 php artisan migrate --force
+
+      - name: Installing Package.json
+        run: docker run --rm \
+          -v $(pwd):/var/www/html \
+          -w /var/www/html \
+          your_project_name_php_1 npm install
+
+      - name: Build Assets
+        run: docker run --rm \
+          -v $(pwd):/var/www/html \
+          -w /var/www/html \
+          your_project_name_php_1 npm run build
+
+      - name: Execute tests (Unit and Feature tests) via PEST
+        run: docker run --rm \
+          -e DB_CONNECTION=sqlite \
+          -v $(pwd):/var/www/html \
+          -w /var/www/html \
+          your_project_name_php_1 php artisan test --parallel
+
+      - name: Execute Larastan
+        run: docker run --rm \
+          -v $(pwd):/var/www/html \
+          -w /var/www/html \
+          your_project_name_php_1 vendor/bin/phpstan analyze
+
+      - name: Execute Pint
+        run: docker run --rm \
+          -v $(pwd):/var/www/html \
+          -w /var/www/html \
+          your_project_name_php_1 vendor/bin/pint --test
