@@ -15,7 +15,7 @@ flex justify-between items-center
                 {{$question->likes  ?? 0}}
             </button>
         </x-form>
-        <x-form :action="route('question.like',$question)">
+        <x-form :action="route('question.unlike',$question)">
             <button title="Click to like this question"
                     class="text-red-700 hover:text-red-900 cursor-pointer flex items-center gap-1">
                 <x-icons.thumbs-down class="w-5 h-5" id="thumbs-up"/>
