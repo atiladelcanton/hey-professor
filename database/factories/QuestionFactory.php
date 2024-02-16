@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Question;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Question>
+ * @extends Factory<Question>
  */
 class QuestionFactory extends Factory
 {
@@ -18,6 +19,7 @@ class QuestionFactory extends Factory
     {
         return [
             'question' => fake()->realText(50),
+            'draft'    => fake()->boolean,
         ];
     }
 }
