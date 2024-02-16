@@ -9,7 +9,8 @@ it('should be able to create a new question bigger than 255 characters', functio
     actingAs($user);
 
     $request = post(route("question.store"), [
-        'question' => str_repeat('*', 260) . '?',
+        'question'   => str_repeat('*', 260) . '?',
+        'created_by' => $user->id,
     ]);
 
     $request->assertRedirect(route('dashboard'));
@@ -22,8 +23,9 @@ it('should create as a draft all the time', function () {
     actingAs($user);
 
     $request = post(route("question.store"), [
-        'question' => str_repeat('*', 260) . '?',
-        'draft'    => true,
+        'question'   => str_repeat('*', 260) . '?',
+        'draft'      => true,
+        'created_by' => $user->id,
     ]);
 
     assertDatabaseHas('questions', ['question' => str_repeat('*', 260) . '?', 'draft' => true]);
@@ -34,7 +36,8 @@ it('should check if ends with question mark ?', function () {
     actingAs($user);
 
     $request = post(route("question.store"), [
-        'question' => str_repeat('*', 10),
+        'question'   => str_repeat('*', 10),
+        'created_by' => $user->id,
     ]);
 
     $request->assertSessionHasErrors([
@@ -48,7 +51,8 @@ it('should have at least 10 characters', function () {
     actingAs($user);
 
     $request = post(route("question.store"), [
-        'question' => str_repeat('*', 8) . '?',
+        'question'   => str_repeat('*', 8) . '?',
+        'created_by' => $user->id,
     ]);
 
     $request->assertSessionHasErrors(
