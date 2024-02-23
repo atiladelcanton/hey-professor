@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 
 class DashboardController extends Controller
 {
@@ -12,6 +13,9 @@ class DashboardController extends Controller
 
         return view('dashboard', [
             'questions' => Question::withSum('votes', 'like')
+                ->when(request()->has('search'), function (Builder $builder) {
+                    $builder->where('question', 'like', '%' . request()->get('search') . '%');
+                })
                 ->withSum('votes', 'unlike')
                 ->orderByRaw('
                     case when votes_sum_like is null then 0 else votes_sum_like end desc,
